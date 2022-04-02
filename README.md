@@ -95,5 +95,5 @@ Response body:
 
 
 ## Database design
-<img src="./database.png">
+<img src="./db.png">
 
