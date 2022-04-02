@@ -1,0 +1,50 @@
+
+version: '3.7'
+
+services:
+  campaign_db:
+    image: postgres:12-alpine
+    environment:
+      "POSTGRES_USER": "postgres"
+      "POSTGRES_PASSWORD": "postgres"
+      "POSTGRES_DB": "campaigns"
+      "PGDATA": "/var/lib/postgresql/data"
+    ports:
+      - 5434:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    logging:
+      driver: none
+    networks:
+      - campaign
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: campaign-backend
+    container_name: campaign-backend
+    environment:
+      - RAILS_ENV=development
+      - RACK_ENV=development
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=campaign_db
+    volumes:
+      - ./campaign
+    restart: always
+    ports:
+      - 3000:3000
+    links:
+      - campaign_db
+    tty: true
+    networks:
+      - campaign
+
+
+networks:
+  campaign:
+    driver: "bridge"
+volumes:
+  pg_data:
+    name: campaign_volume_pg
